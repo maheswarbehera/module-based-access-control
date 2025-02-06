@@ -1,5 +1,6 @@
 import path from "path";
 import { Role } from "../models/role.model.js"; 
+import { Module, Permission } from "../models/permission.model.js";
 
 export const updateRole = async (req, res) => {
     try {
@@ -55,4 +56,84 @@ export const updateRole = async (req, res) => {
         console.error(error); // For debugging
         res.status(500).json({ status: false, message: "Error updating role" });
     }
+}; 
+
+export const createRoleWithPermissions = async (req, res) => {
+  try {
+    const { name, permissions } = req.body;
+
+    // Step 1: Find or create Modules dynamically (if modules do not exist)
+    const moduleIds = await Promise.all(
+      permissions.map(async (perm) => {
+        const module = await Module.findOne({ name: perm.module });
+        
+        if (!module) {
+          // If module doesn't exist, create a new one
+          const newModule = new Module({ name: perm.module });
+          await newModule.save();
+          return newModule._id;
+        }
+
+        return module._id;
+      })
+    );
+
+    // Step 2: Create and save permissions using the found module IDs
+    const permissionIds = await Promise.all(
+      permissions.map(async (perm, index) => {
+        const permission = new Permission({
+          module: moduleIds[index],
+          read: perm.read,
+          write: perm.write,
+          update: perm.update,
+          delete: perm.delete,
+        });
+
+        const savedPermission = await permission.save();
+        return savedPermission._id;
+      })
+    );
+
+    // Step 3: Create the role and assign the permissions
+    const role = new Role({
+      name,
+      permissions: permissionIds,  // Assign permission IDs
+    });
+
+    await role.save();
+
+    res.status(201).json({ role, message: "Role created successfully" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
+
+export const getByRoleID = async (req, res) => {
+    try {
+        const role = await Role.findById(req.params.id).populate({path:"permissions", populate: {path: "module"}});
+        if (!role) {
+            return res.status(404).json({ status: false, message: "Role not found" });
+        }
+        res.status(200).json({ status: true, role });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Error fetching role" });
+    }
+}
+
+export const list = async (req, res) => {
+    try {
+        const roles = await Role.find().populate({path:"permissions", populate: {path: "module"}});
+        res.status(200).json({ status: true, roles , message: "Roles fetched successfully" });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Error fetching roles" });
+    }
+}
+
+export const getModules = async (req, res) => {
+    try {
+        const modules = await Module.find();
+        res.status(200).json({ status: true, modules , message: "Modules fetched successfully" });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Error fetching modules" });
+    }
+}

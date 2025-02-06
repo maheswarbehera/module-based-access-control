@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const permissionSchema = new mongoose.Schema({
-    name: { type: String, required: true, unique: true },
+    // name: { type: String, required: true, unique: true },
     // allowedModules: [{ type: String }],
     module: { type: mongoose.Schema.Types.ObjectId, ref: "Module" },
     read: { type: Boolean, default: false },
