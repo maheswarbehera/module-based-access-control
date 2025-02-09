@@ -21,7 +21,7 @@ export const authenticateUser = (req, res, next) => {
     }
 };
 
-export const checkModuleAccess = (module) => {
+export const checkModuleAccess = (moduleName, actions) => {
     return async (req, res, next) => {
         try {   
             const user = await User.findById(req.user.id).populate({
@@ -29,8 +29,26 @@ export const checkModuleAccess = (module) => {
                 populate: { path: "permissions" , populate: {path: "module"} }
             }); 
 
-            if (!user || !user.role.permissions.some(perm => perm.module.name.includes(module))) {
-                return res.status(403).json({ status: false, message: "Access denied" });
+                // // Check if the user has access to any of the specified modules
+                // const hasAccess = user.role.permissions.some(perm => 
+                //     perm.module && moduleName.includes(perm.module.name)
+                // );
+
+           // Find the permissions for the requested module
+           const userPermission = user.role.permissions.find(perm => perm.module && perm.module.name === moduleName); 
+
+            if (!userPermission) {
+                return res.status(403).json({ status: false, message: "Access denied: No permissions for this module" });
+            }
+               // Check if user has all required permissions
+               const requiredActions = Array.isArray(actions) ? actions : [actions];
+               const hasPermissions = requiredActions.filter(action => !userPermission[action]);
+
+               if (hasPermissions.length > 0) {
+                return res.status(403).json({
+                    status: false,
+                    message: `Access denied: can't ${hasPermissions.join(", ")} permission(s) for module ${moduleName}`
+                });
             }
             next();
         } catch (error) {
