@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar'
 import Login from './pages/Login' 
 import { useEffect, useState } from 'react';
 import api from './config';
+import CreateRole from './Role';
 
 function App() { 
   const [roleName, setRoleName] = useState('');
@@ -21,7 +22,7 @@ function App() {
         console.error("Error fetching modules:", error);
       }
     };
-    fetchModules();
+    // fetchModules();
   }, []);
 
   // Handle role name input change
@@ -71,64 +72,7 @@ function App() {
       </div> 
       <Login/>
       <Sidebar/> 
-      <div>
-      <h2>Create Role</h2>
-      <form onSubmit={handleSubmit}>
-        {/* Role Name */}
-        <div>
-          <label htmlFor="roleName">Role Name:</label>
-          <input
-            type="text"
-            id="roleName"
-            value={roleName}
-            onChange={handleRoleNameChange}
-            required
-            placeholder="Enter role name"
-          />
-        </div>
-
-        {/* Permissions for each module */}
-        <div>
-          <h3>Assign Permissions:</h3>
-          {modules.map((module) => (
-            <div key={module._id}>
-              <h4>{module.name}</h4>
-              <label>
-                <input
-                  type="checkbox"
-                  onChange={(e) => handlePermissionChange(module.name, 'read', e.target.checked)}
-                />
-                Read
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  onChange={(e) => handlePermissionChange(module.name, 'write', e.target.checked)}
-                />
-                Write
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  onChange={(e) => handlePermissionChange(module.name, 'update', e.target.checked)}
-                />
-                Update
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  onChange={(e) => handlePermissionChange(module.name, 'delete', e.target.checked)}
-                />
-                Delete
-              </label>
-            </div>
-          ))}
-        </div>
-
-        {/* Submit Button */}
-        <button type="submit">Create Role</button>
-      </form>
-    </div>
+      
     </>
   )
 }

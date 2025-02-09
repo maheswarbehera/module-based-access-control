@@ -20,7 +20,7 @@ const Sidebar = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const { data } = await api.get("/categories");
+        const { data } = await api.get("/category");
         setData(data.categories);
         setLoading(false);
       } catch (error) {
@@ -46,7 +46,7 @@ const Sidebar = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const res = await api.post('/categories', formData);
+      const res = await api.post('/category', formData);
       console.log(res.data.message);
       alert(`Category created: ${formData.name}`);
       // Optionally, reset form data after success
@@ -60,7 +60,7 @@ const Sidebar = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
-        const res = await api.delete(`/categories/${id}`);
+        const res = await api.delete(`/category/${id}`);
         console.log(res);
         alert(`Category with ID: ${id} deleted`);
         // Optionally, refresh the categories list after deletion
@@ -74,7 +74,7 @@ const Sidebar = () => {
 
   const handleEdit = async (id) => {
     try {
-      const res = await api.put(`/categories/${id}`, formData);
+      const res = await api.put(`/category/${id}`, formData);
       console.log(res);
       alert(`Category with ID: ${id} updated`);
     } catch (error) {
