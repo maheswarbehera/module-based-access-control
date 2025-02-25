@@ -94,12 +94,13 @@ const Sidebar = () => {
   return (
     <>
       <nav>
-        {canRead && <a href="/category">Category - Read</a>}
-        {canWrite && <a href="/category">Category - Write</a>}
-        {canUpdate && <a href="/category">Category - Update</a>}
-        {canDelete && <a href="/category">Category - Delete</a>}
+        {canRead && <span >Category - Read </span>}
+        {canWrite && <span > ,Write</span>}
+        {canUpdate && <span > ,Update</span>}
+        {canDelete && <span > ,Delete</span>}
 
-        <div>
+        {canWrite && (
+          <div>
           <form onSubmit={canWrite ? handleSubmit : () => alert('You do not have permission to write.')}>
             <div>
               <label>
@@ -129,6 +130,7 @@ const Sidebar = () => {
             <button type="submit" disabled={!canWrite}>Submit</button>
           </form>
         </div>
+          )}
       </nav>
 
       {canRead && (

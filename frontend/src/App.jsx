@@ -6,6 +6,9 @@ import Login from './pages/Login'
 import { useEffect, useState } from 'react';
 import api from './config';
 import CreateRole from './Role';
+import Dashboard from './components/theme/Index';
+import DigitalSignature from './components/DigitalSignature';
+import CameraCapture from './components/CaptureCam';
 
 function App() { 
   const [roleName, setRoleName] = useState('');
@@ -72,7 +75,10 @@ function App() {
       </div> 
       <Login/>
       <Sidebar/> 
-      
+      <CreateRole/>
+      {/* <Dashboard/> */}
+      {/* <DigitalSignature/> */}
+      {/* <CameraCapture/> */}
     </>
   )
 }

@@ -9,14 +9,20 @@ import { getModulesWithPermissions, getPermissions } from "./controllers/permiss
 
 const app = express();
 app.use(express.json());
-app.use(cors())
-app.use(function(req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
-});
+app.use(cors({ 
+  origin:"*", 
+  credentials: true, 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+  allowedHeaders: ['Content-Type', 'Authorization'] 
+}));
+app.options('*', cors());
+// app.use(function(req, res, next) {
+//   res.setHeader('Access-Control-Allow-Origin', '*');
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+//   res.setHeader('Access-Control-Allow-Credentials', true);
+//   next();
+// });
 connectDb().then(async () => {
   app.listen(5000, () => {
     console.log("Server is running on port 3000");
@@ -99,4 +105,18 @@ Object.entries(modulesWithRoutes).forEach(([moduleName, routes]) => {
   });
 }); 
 
+// app.use((req, res, next) => {
+//   console.warn(`[404] Route not found: ${req.method} ${req.originalUrl}`);
+//   res.status(404).json({
+//     status: false,
+//     message: `Route not found: ${req.method} ${req.originalUrl}`
+//   });
+// });
 
+app.use((req, res, next) => {
+  console.warn(`[404] Route not found: ${req.method} ${req.originalUrl}`);
+  res.status(404).json({
+    status: false,
+    message: `Route not found: ${req.method} ${req.originalUrl}`
+  });
+});
